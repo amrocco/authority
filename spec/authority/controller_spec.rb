@@ -153,6 +153,19 @@ describe Authority::Controller do
 
       end
 
+      describe "meta authority_actions" do
+
+        it "modifies this controller's authority action map" do
+          new_actions = { :show => :read, :synthesize => :create, :annihilate => 'delete' }
+          controller_class.readable_authority_actions([:show])
+          controller_class.creatable_authority_actions([:synthesize])
+          controller_class.deletable_authority_actions([:annihilate])
+          expect(controller_class.authority_action_map).to eq(
+            Authority.configuration.controller_action_map.merge(new_actions)
+          )
+        end
+      end
+
       describe "authority_actions" do
 
         it "modifies this controller's authority action map" do

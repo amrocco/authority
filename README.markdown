@@ -383,6 +383,23 @@ class LlamasController < ApplicationController
 end
 ```
 
+You may also write this as:
+
+```ruby
+class LlamasController < ApplicationController
+  readable_authority_actions [:breed]
+  deletable_authority_actions [:vaporize]
+  
+  def breed
+    # some code
+  end
+
+  def vaporize
+    # some code
+  end
+end
+```
+
 If you have a controller that dynamically determines the class it's working with, you can pass the name of a controller instance method to `authorize_actions_for` instead of a class, and the class will be looked up when a request is made.
 
 ```ruby

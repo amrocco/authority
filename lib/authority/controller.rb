@@ -32,6 +32,24 @@ module Authority
     end
 
     module ClassMethods
+      # Allows defining and overriding a controller's map of its actions to the model's authorizer methods
+      # @param [Hash] action_map - controller actions and methods, to be merged with existing action_map
+      def authority_actions(action_map)
+        forced_action = action_map.delete(:all_actions)
+        add_actions(action_map)
+        force_action(forced_action) if forced_action
+      end
+
+      # Alternative way of defining a controller's map of its actions to the
+      # model's authorizer method. In this case the map is defined per ability,
+      # and accepts an array of actions that map to the ability.
+      Authority.abilities.each do |key, value|
+        define_method("#{value}_authority_actions") do |argument|
+          argument.each do |action|
+            authority_actions(action => key)
+          end
+        end
+      end
 
       # Sets up before_filter to ensure user is allowed to perform a given controller action
       #
@@ -46,23 +64,6 @@ module Authority
         add_actions(options.fetch(:actions, {}))
         force_action(options[:all_actions]) if options[:all_actions]
         before_filter :run_authorization_check, options
-      end
-
-      # Allows defining and overriding a controller's map of its actions to the model's authorizer methods
-      #
-      # @param [Hash] action_map - controller actions and methods, to be merged with existing action_map
-      def authority_actions(action_map)
-        forced_action = action_map.delete(:all_actions)
-        add_actions(action_map)
-        force_action(forced_action) if forced_action
-      end
-
-      def authority_action(action_map)
-        Authority.logger.warn "Authority's `authority_action` method has been renamed \
-        to `authority_actions` (plural) to reflect the fact that you can \
-        set multiple actions in one shot. Please update your controllers \
-        accordingly. (called from #{caller.first})".squeeze(' ')
-        authority_actions(action_map)
       end
 
       # Convenience wrapper for instance method

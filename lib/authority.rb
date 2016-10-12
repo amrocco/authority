@@ -67,6 +67,7 @@ module Authority
     require 'authority/abilities'
     require 'authority/authorizer'
     require 'authority/user_abilities'
+    require 'authority/controller'
   end
 
   class MissingUser < StandardError
@@ -96,6 +97,5 @@ module Authority
 end
 
 require 'authority/configuration'
-require 'authority/controller'
 require 'authority/railtie' if defined?(Rails)
 require 'authority/version'
